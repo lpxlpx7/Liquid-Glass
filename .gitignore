@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Your own wallpaper (e.g. a copy of a macOS wallpaper) stays local; it may be copyrighted.
+public/wallpaper.jpg
