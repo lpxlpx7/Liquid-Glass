@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
-// GitHub Pages serves the site from /Liquid-Glass/; local dev stays at /.
-export default defineConfig(({ command }) => ({
-  base: command === 'build' && process.env.GITHUB_PAGES ? '/Liquid-Glass/' : '/',
-}));
+// Relative asset paths: the build works at a domain root (custom domain)
+// and under a sub-path such as https://<user>.github.io/Liquid-Glass/.
+export default defineConfig({
+  base: './',
+});

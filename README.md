@@ -2,7 +2,7 @@
 
 A WebGL2 + TypeScript take on Apple's Liquid Glass material, shown on a macOS-style test desktop.
 
-Live demo: https://lpxlpx7.github.io/Liquid-Glass/ (needs a browser with WebGL2).
+Live demo: https://liquidglass.jurina.org/ (needs a browser with WebGL2).
 
  No runtime dependencies; Vite is only used for development and bundling.
 
