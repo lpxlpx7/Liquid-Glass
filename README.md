@@ -1,6 +1,10 @@
 # Liquid Glass
 
-A WebGL2 + TypeScript take on Apple's Liquid Glass material, shown on a macOS-style test desktop. No runtime dependencies; Vite is only used for development and bundling.
+A WebGL2 + TypeScript take on Apple's Liquid Glass material, shown on a macOS-style test desktop.
+
+Live demo: https://lpxlpx7.github.io/Liquid-Glass/ (needs a browser with WebGL2).
+
+ No runtime dependencies; Vite is only used for development and bundling.
 
 ## Run
 
@@ -9,7 +13,7 @@ npm install
 npm run dev
 ```
 
-`npm run build` type-checks and writes a static build to `dist/`.
+`npm run build` type-checks and writes a static build to `dist/`. Every push to `main` is built and deployed to GitHub Pages by `.github/workflows/pages.yml`.
 
 ## What the glass does
 
