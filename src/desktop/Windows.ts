@@ -3,6 +3,7 @@ import { GlassShape } from '../glass/GlassShape';
 import { material } from '../glass/Material';
 import { ICONS, drawIcon } from '../scene/GlyphLayer';
 import { FONT, art, ellipsize, rr, text, wrap } from './draw';
+import { PhoneWindow } from './PhoneWindow';
 import { FrameInfo, Widget, WindowInfo } from './types';
 
 type Kind = 'finder' | 'photos' | 'notes';
@@ -379,15 +380,17 @@ export class AppWindow {
   }
 }
 
+type Win = AppWindow | PhoneWindow;
+
 /** Manages z-order, focus, dragging, scrolling and traffic-light actions. */
 export class WindowManager implements Widget {
-  readonly windows: AppWindow[];
+  readonly windows: Win[];
   readonly shapes: GlassShape[];
-  private z: AppWindow[];
+  private z: Win[];
   private vw = 1;
   private vh = 1;
-  private active: AppWindow | null = null;
-  private mode: 'none' | 'drag' | 'light' | 'button' = 'none';
+  private active: Win | null = null;
+  private mode: 'none' | 'drag' | 'light' | 'button' | 'phone' = 'none';
   private offX = 0;
   private offY = 0;
   private light = -1;
@@ -395,12 +398,12 @@ export class WindowManager implements Widget {
   private dirty = true;
 
   constructor() {
-    this.windows = [new AppWindow('finder', 'Finder'), new AppWindow('photos', 'Photos'), new AppWindow('notes', 'Notes')];
+    this.windows = [new AppWindow('finder', 'Finder'), new AppWindow('photos', 'Photos'), new AppWindow('notes', 'Notes'), new PhoneWindow()];
     this.z = [...this.windows];
     this.shapes = this.windows.flatMap((w) => w.shapes);
   }
 
-  get focused(): AppWindow | null {
+  get focused(): Win | null {
     for (let i = this.z.length - 1; i >= 0; i--) if (this.z[i].open && this.z[i].appear.target > 0) return this.z[i];
     return null;
   }
@@ -414,7 +417,7 @@ export class WindowManager implements Widget {
     return this.windows.map((w) => ({ id: w.kind, title: w.title, open: w.open && w.appear.target > 0, focused: w === f }));
   }
 
-  focus(w: AppWindow): void {
+  focus(w: Win): void {
     this.z = this.z.filter((x) => x !== w).concat(w);
     this.dirty = true;
   }
@@ -429,7 +432,7 @@ export class WindowManager implements Widget {
     this.focus(w);
   }
 
-  close(w: AppWindow): void {
+  close(w: Win): void {
     w.appear.target = 0;
     this.dirty = true;
   }
@@ -457,8 +460,16 @@ export class WindowManager implements Widget {
       notes: [Math.min(700, vw - 60), Math.min(470, vh - 210), vw * 0.1, 150],
     };
     for (const w of this.windows) {
-      const [ww, hh, x, y] = defs[w.kind];
-      if (!w.placed) {
+      if (w instanceof PhoneWindow) {
+        const d = w.defaultRect(vw, vh);
+        if (!w.placed) {
+          w.placed = true;
+          Object.assign(w, d);
+        }
+        w.w = d.w;
+        w.h = d.h;
+      } else if (!w.placed) {
+        const [ww, hh, x, y] = defs[w.kind];
         w.placed = true;
         w.w = Math.max(320, ww);
         w.h = Math.max(280, hh);
@@ -495,7 +506,7 @@ export class WindowManager implements Widget {
     this.focused?.drawGlyphs(ctx);
   }
 
-  private topAt(x: number, y: number): AppWindow | null {
+  private topAt(x: number, y: number): Win | null {
     for (let i = this.z.length - 1; i >= 0; i--) if (this.z[i].contains(x, y)) return this.z[i];
     return null;
   }
@@ -510,6 +521,16 @@ export class WindowManager implements Widget {
     this.mode = 'none';
     if (!w) return;
     this.focus(w);
+    if (w instanceof PhoneWindow) {
+      const r = w.pointerDown(x, y);
+      if (r === 'capture') this.mode = 'phone';
+      else if (r === 'drag') {
+        this.mode = 'drag';
+        this.offX = x - w.x;
+        this.offY = y - w.y;
+      }
+      return;
+    }
     const g = w.geom();
     for (let i = 0; i < 3; i++) {
       if (Math.hypot(x - (g.sidebar.x + 18 + i * 20), y - (g.sidebar.y + 18)) < 9) {
@@ -549,10 +570,17 @@ export class WindowManager implements Widget {
       w.x = clamp(x - this.offX, -w.w + 120, this.vw - 120);
       w.y = clamp(y - this.offY, 34, this.vh - 60);
     } else if (this.mode === 'button' && this.pressed) this.pressed.moveTouch(x, y);
+    else if (this.mode === 'phone' && w instanceof PhoneWindow) w.pointerMove(x, y);
   }
 
   up(x: number, y: number): void {
     const w = this.active;
+    if (w instanceof PhoneWindow) {
+      if (this.mode === 'phone') w.pointerUp(x);
+      this.mode = 'none';
+      this.active = null;
+      return;
+    }
     if (w && this.mode === 'light') {
       const g = w.geom();
       if (Math.hypot(x - (g.sidebar.x + 18 + this.light * 20), y - (g.sidebar.y + 18)) < 12) {

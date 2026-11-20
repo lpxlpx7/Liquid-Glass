@@ -2,9 +2,25 @@
 
 A WebGL2 + TypeScript take on Apple's Liquid Glass material, shown on a macOS-style test desktop.
 
-Live demo: https://liquidglass.jurina.org/ (needs a browser with WebGL2).
+- Desktop demo: https://liquidglass.jurina.org/
+- Embedding example: https://liquidglass.jurina.org/examples/embed.html
 
- No runtime dependencies; Vite is only used for development and bundling.
+Both need a browser with WebGL2. There are no runtime dependencies; Vite is only used for development and bundling.
+
+## Use it in your own page
+
+```html
+<div id="stage">
+  <nav data-glass="regular">...</nav>
+  <button data-glass="clear" data-glass-interactive>Press me</button>
+</div>
+<script type="module">
+  import { LiquidGlass } from 'https://liquidglass.jurina.org/lib/liquid-glass.js';
+  LiquidGlass.mount(document.getElementById('stage'), { background: 'photo.jpg' });
+</script>
+```
+
+Every `data-glass` element gets a piece of glass that follows its position, size and border-radius. The glass refracts the background you pass in (an image, video or canvas), not live HTML. See [docs/EMBEDDING.md](docs/EMBEDDING.md) for attributes, presets, materials, the JavaScript API and limits.
 
 ## Run
 
@@ -13,7 +29,7 @@ npm install
 npm run dev
 ```
 
-`npm run build` type-checks and writes a static build to `dist/`. Every push to `main` is built and deployed to GitHub Pages by `.github/workflows/pages.yml`.
+`npm run build` type-checks and writes the demo, the example page and the library (`dist/lib/liquid-glass.js`) to `dist/`. `npm run build:lib` builds only the library. Every push to `main` is built and deployed to GitHub Pages by `.github/workflows/pages.yml`.
 
 ## What the glass does
 
@@ -34,6 +50,7 @@ All of it happens per pixel in one fragment shader (`src/gl/shaders.ts`):
 - Finder, Photos and Notes windows: drag, focus, close, zoom, scroll. The focused window has a glass sidebar and toolbar; Photos scrolls under the sidebar.
 - Dock with hover magnification, launch bounce and running indicators.
 - Control Center with toggles and brightness/volume sliders whose knobs turn into lenses while held.
+- Phone Demo window with the iOS 26 style floating tab bar: press or drag the selection and it lifts into a clear, magnifying lens that stretches as it moves and settles on the nearest tab. Content scrolls under the bar (wheel or drag).
 - Clock and calendar widgets (they go flat when a window covers them).
 - Test Panel (Dock icon) with every glass parameter, wallpaper switcher and FPS.
 - Draggable liquid lens (menu bar icon), with throw momentum.
@@ -71,8 +88,11 @@ src/
   gl/                       shaders and WebGL helpers
   glass/                    renderer, GlassShape, materials, global settings
   scene/                    glyph layer (icons on glass), luminance probe
-  desktop/                  menu bar, windows, dock, control center, widgets, test panel, lens, wallpapers
+  desktop/                  menu bar, windows, phone + tab bar, dock, control center, widgets, test panel, lens, wallpapers
+  lib/                      embeddable LiquidGlass API (built to dist/lib/liquid-glass.js)
   main.ts                   wiring, input routing, frame loop
+examples/                   embedding example page
+docs/EMBEDDING.md           how to use the glass in other pages
 ```
 
 This is an independent demo and is not affiliated with Apple. Icons and app content are drawn in code.

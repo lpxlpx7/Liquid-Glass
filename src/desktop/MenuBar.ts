@@ -87,6 +87,7 @@ export class MenuBar implements Widget {
           { label: 'Open Finder', action: () => d.openApp('finder') },
           { label: 'Open Photos', action: () => d.openApp('photos') },
           { label: 'Open Notes', action: () => d.openApp('notes') },
+          { label: 'Open Phone Demo', action: () => d.openApp('phone') },
           { label: '', sep: true },
           { label: 'Close Window', action: () => d.closeFocused() },
         ],

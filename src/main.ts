@@ -58,7 +58,7 @@ const desk: Desktop = {
   ui,
   settings,
   openApp: (id) => {
-    if (id === 'finder' || id === 'photos' || id === 'notes') wm.open(id);
+    if (id === 'finder' || id === 'photos' || id === 'notes' || id === 'phone') wm.open(id);
     else if (id === 'trash') toast('The Trash is empty');
     else toast('This icon only demonstrates the Dock');
   },
@@ -96,6 +96,7 @@ const allShapes = (): GlassShape[] => [
 if (!new URLSearchParams(location.search).has('empty')) {
   wm.open('finder');
   wm.open('photos');
+  wm.open('phone');
 }
 
 wallpaper.onChange = () => (flags.scene = true);

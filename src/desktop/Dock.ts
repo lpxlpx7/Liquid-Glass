@@ -12,12 +12,13 @@ const APPS: App[] = [
   { id: 'finder', name: 'Finder', color: '#1e88ff', icon: ICONS.folder },
   { id: 'photos', name: 'Photos', color: '#ff9f0a', icon: ICONS.photo },
   { id: 'notes', name: 'Notes', color: '#ffd60a', icon: ICONS.notes, dark: true },
+  { id: 'phone', name: 'Phone Demo', color: '#34c759', icon: ICONS.phone },
   { id: 'music', name: 'Music', color: '#ff2d55', icon: ICONS.music },
   { id: 'terminal', name: 'Terminal', color: '#2c2c2e', icon: ICONS.terminal },
   { id: 'test', name: 'Test Panel', color: '#8e8e93', icon: ICONS.sliders },
   { id: 'trash', name: 'Trash', color: 'glass', icon: ICONS.trash },
 ];
-const SEP_BEFORE = 6;
+const SEP_BEFORE = 7;
 
 const S = 50;
 const GAP = 8;

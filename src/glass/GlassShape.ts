@@ -40,6 +40,13 @@ export class GlassShape {
   /** Squash & stretch per px/s of velocity. */
   stretch = 0.00016;
   maxStretch = 0.32;
+  /**
+   * Velocity (px/s) used for squash & stretch instead of the position springs'.
+   * Useful when the owner snaps the position every frame (e.g. a piece of glass
+   * sliding inside a container that is itself being dragged).
+   */
+  extVX: number | null = null;
+  extVY: number | null = null;
 
   // Computed each update (CSS px)
   cx = 0;
@@ -115,8 +122,8 @@ export class GlassShape {
     mixMaterial(this.rest, this.lifted, clamp(a, 0, 1), this.mat);
 
     // Squash & stretch: elongate along the direction of travel, keep volume roughly constant.
-    const tx = Math.min(Math.abs(this.x.velocity) * this.stretch, this.maxStretch);
-    const ty = Math.min(Math.abs(this.y.velocity) * this.stretch, this.maxStretch);
+    const tx = Math.min(Math.abs(this.extVX ?? this.x.velocity) * this.stretch, this.maxStretch);
+    const ty = Math.min(Math.abs(this.extVY ?? this.y.velocity) * this.stretch, this.maxStretch);
     const k = dt > 0 ? Math.min(1, dt * 22) : 1;
     this.sx += (1 + tx - ty * 0.55 - this.sx) * k;
     this.sy += (1 + ty - tx * 0.55 - this.sy) * k;
